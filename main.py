@@ -114,13 +114,13 @@ class Classifier:
 
             sorted_feats, sorted_labels = self._sort_feats_and_labels(feats, labels, root_node.feature)
 
-            thres_idx = self.get_threshold_index(sorted_feats[root_node.feature], root_node.threshold)
+            idx = self.get_threshold_index(sorted_feats[root_node.feature], root_node.threshold)
             # left side
-            sliced_feats = {key: value[:thres_idx] for key, value in feats.items()}
-            root_node.left = self._walk(root_node, sliced_feats, sorted_labels[:thres_idx])
+            sliced_feats = {key: value[:idx] for key, value in feats.items()}
+            root_node.left = self._walk(root_node, sliced_feats, sorted_labels[:idx])
             # right side
-            sliced_feats = {key: value[thres_idx:] for key, value in feats.items()}
-            root_node.right = self._walk(root_node, sliced_feats, sorted_labels[thres_idx:])
+            sliced_feats = {key: value[idx:] for key, value in feats.items()}
+            root_node.right = self._walk(root_node, sliced_feats, sorted_labels[idx:])
             return root_node
         
         # Other than Initial Walk
@@ -164,15 +164,15 @@ class Classifier:
         
         sorted_feats, sorted_labels = self._sort_feats_and_labels(feats, labels, next_node.feature)
 
-        thres_idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
+        idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
         # left side
-        if thres_idx !=0: 
-            sliced_feats = {key: value[:thres_idx] for key, value in feats.items()}
-            next_node.left = self._walk(next_node, sliced_feats, sorted_labels[:thres_idx])
+        if idx !=0: 
+            sliced_feats = {key: value[:idx] for key, value in feats.items()}
+            next_node.left = self._walk(next_node, sliced_feats, sorted_labels[:idx])
         # right side
-        if thres_idx != length - 1:
-            sliced_feats = {key: value[thres_idx:] for key, value in feats.items()}
-            next_node.right = self._walk(next_node, sliced_feats, sorted_labels[thres_idx:])
+        if idx != length - 1:
+            sliced_feats = {key: value[idx:] for key, value in feats.items()}
+            next_node.right = self._walk(next_node, sliced_feats, sorted_labels[idx:])
         return next_node
             
     def train(self, feats: feats_dtype, labels: list[int]):
