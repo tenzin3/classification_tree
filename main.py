@@ -29,6 +29,12 @@ class Classifier:
                 correct += 1
         
         return correct / len(prediction)
+    
+    @staticmethod
+    def get_threshold_index(arr: list[int | float], threshold: int | float) -> int:
+        for idx, val in enumerate(arr):
+            if val >= threshold:
+                return idx
  
     def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
         label_count = len(label)
@@ -47,7 +53,32 @@ class Classifier:
         sorted_label = [label[i] for i in sorted_indices]
 
         return sorted_vals, sorted_label
-            
+    
+    from typing import Union
+
+    def _sort_features_and_label(self,
+                                features: dict[str, list[Union[int, float]]],
+                                label: list[int],
+                                feature_name: str
+        ) -> tuple[dict[str, list[Union[int, float]]], list[int]]:
+        # Get the list of values for the given feature
+        feature_values = features[feature_name]
+
+        # Obtain indices that would sort the feature_values
+        sorted_indices = sorted(range(len(feature_values)), key=lambda i: feature_values[i])
+
+        # Reorder each feature list using sorted indices
+        sorted_features = {
+            fname: [features[fname][i] for i in sorted_indices]
+            for fname in features
+        }
+
+        # Reorder the label list using sorted indices
+        sorted_label = [label[i] for i in sorted_indices]
+
+        return sorted_features, sorted_label
+
+
     def _walk(self, node: Node, features: dict[str, list[int | float]], label: list[int]):
         # first walk
         if node == None:
@@ -81,6 +112,15 @@ class Classifier:
                     max = feat_max
 
             self.root_node = root_node
+            sorted_features, sorted_label = self._sort_features_and_label(features, label, self.root_node.feature)
+
+            threshold_index = self.get_threshold_index(sorted_features[self.root_node.feature], self.root_node.threshold)
+            # left side
+            sliced_features = {key: value[:k] for key, value in features.items()}
+            self._walk(self.root_node, sliced_features, sorted_label[:threshold_index])
+            # right side
+            sliced_features = {key: value[k:] for key, value in features.items()}
+            self._walk(self.root_node, sliced_features, sorted_label[k:])
             
     def train(self, features: dict[str, list[int | float]], label: list[int]):
         self._validate_training_data(features, label)
