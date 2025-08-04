@@ -126,7 +126,6 @@ class Classifier:
         # Other than Initial Walk
         max = 0
         next_node = None
-        length = len(labels)
         for feat_name, feat in feats.items():
             # Same feature cant be used for consecutive adjacent nodes
             if feat_name == node.feature:
@@ -143,13 +142,13 @@ class Classifier:
         sorted_feats, sorted_labels = self._sort_feats_and_labels(feats, labels, next_node.feature)
 
         idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
-        # left side
-        if idx !=0: 
-            left_feats = {key: value[:idx] for key, value in feats.items()}
+        left_feats = {key: value[:idx] for key, value in feats.items()}
+        right_feats = {key: value[idx:] for key, value in feats.items()}
+
+        if idx !=0 and left_feats != feats:
             next_node.left = self._walk(next_node, left_feats, sorted_labels[:idx])
         # right side
-        if idx != length - 1:
-            right_feats = {key: value[idx:] for key, value in feats.items()}
+        if idx != len(feats) - 1 and right_feats != feats:
             next_node.right = self._walk(next_node, right_feats, sorted_labels[idx:])
         return next_node
             
