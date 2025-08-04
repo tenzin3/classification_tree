@@ -101,33 +101,33 @@ class Classifier:
         return feat_max, node
 
 
-    def _walk(self, node: Node, features: feats_dtype, labels: list[int]):
+    def _walk(self, node: Node, feats: feats_dtype, labels: list[int]):
         # first walk
         if node == None:
             max = 0
             root_node = None
-            for feat, vals in features.items():
-                feat_max, node = self._walk_feat(vals, labels, feat)
+            for feat_name, feat in feats.items():
+                feat_max, node = self._walk_feat(feat, labels, feat_name)
                 if feat_max > max:
                     max = feat_max
                     root_node = node
 
-            sorted_features, sorted_labels = self._sort_features_and_labels(features, labels, root_node.feature)
+            sorted_feats, sorted_labels = self._sort_features_and_labels(feats, labels, root_node.feature)
 
-            thres_idx = self.get_threshold_index(sorted_features[root_node.feature], root_node.threshold)
+            thres_idx = self.get_threshold_index(sorted_feats[root_node.feature], root_node.threshold)
             # left side
-            sliced_features = {key: value[:thres_idx] for key, value in features.items()}
-            root_node.left = self._walk(root_node, sliced_features, sorted_labels[:thres_idx])
+            sliced_feats = {key: value[:thres_idx] for key, value in feats.items()}
+            root_node.left = self._walk(root_node, sliced_feats, sorted_labels[:thres_idx])
             # right side
-            sliced_features = {key: value[thres_idx:] for key, value in features.items()}
-            root_node.right = self._walk(root_node, sliced_features, sorted_labels[thres_idx:])
+            sliced_feats = {key: value[thres_idx:] for key, value in feats.items()}
+            root_node.right = self._walk(root_node, sliced_feats, sorted_labels[thres_idx:])
             return root_node
         
         # Other than Initial Walk
         max = 0
         next_node = None
         length = len(labels)
-        for feat, vals in features.items():
+        for feat, vals in feats.items():
             # Same feature cant be used for consecutive adjacent nodes
             if feat == node.feature:
                 continue
@@ -162,26 +162,26 @@ class Classifier:
         if next_node == None:
             return None
         
-        sorted_features, sorted_labels = self._sort_features_and_labels(features, labels, next_node.feature)
+        sorted_feats, sorted_labels = self._sort_features_and_labels(feats, labels, next_node.feature)
 
-        thres_idx = self.get_threshold_index(sorted_features[next_node.feature], next_node.threshold)
+        thres_idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
         # left side
         if thres_idx !=0: 
-            sliced_features = {key: value[:thres_idx] for key, value in features.items()}
-            next_node.left = self._walk(next_node, sliced_features, sorted_labels[:thres_idx])
+            sliced_feats = {key: value[:thres_idx] for key, value in feats.items()}
+            next_node.left = self._walk(next_node, sliced_feats, sorted_labels[:thres_idx])
         # right side
         if thres_idx != length - 1:
-            sliced_features = {key: value[thres_idx:] for key, value in features.items()}
-            next_node.right = self._walk(next_node, sliced_features, sorted_labels[thres_idx:])
+            sliced_feats = {key: value[thres_idx:] for key, value in feats.items()}
+            next_node.right = self._walk(next_node, sliced_feats, sorted_labels[thres_idx:])
         return next_node
             
-    def train(self, features: feats_dtype, labels: list[int]):
-        self._validate_training_data(features, labels)
+    def train(self, feats: feats_dtype, labels: list[int]):
+        self._validate_training_data(feats, labels)
 
         root_node = None
-        self.root_node = self._walk(root_node, features, labels)
+        self.root_node = self._walk(root_node, feats, labels)
 
-    def predict(self, features: list[float]):
+    def predict(self, feat: list[int | float]):
         pass 
 
 

@@ -11,7 +11,7 @@ class TestClassifier(TestCase):
         labels = [0,0,0,1,1]
         
         classifier = Classifier()
-        classifier.train(features=features, labels=labels)
+        classifier.train(feats=features, labels=labels)
 
         assert classifier.root_node.feature == "petal_length"
         assert classifier.root_node.left_label == 0
