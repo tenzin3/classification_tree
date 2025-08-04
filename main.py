@@ -16,7 +16,7 @@ class Classifier:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
         
-    def calculate_accuracy(self, prediction: list[int | float], label: list[int | float]):
+    def calculate_accuracy(self, prediction: list[int], label: list[int]):
         if len(prediction) != len(label):
             raise ValueError("Number of prediction values is not equal to Labels.")
         
