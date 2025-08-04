@@ -56,14 +56,12 @@ class Classifier:
         sorted_labels = [labels[i] for i in sorted_indices]
 
         return sorted_vals, sorted_labels
-    
-    from typing import Union
 
     def _sort_features_and_label(self,
-                                features: dict[str, list[Union[int, float]]],
-                                labels: list[int],
-                                feature_name: str
-        ) -> tuple[dict[str, list[Union[int, float]]], list[int]]:
+                                 features: dict[str, list[int | float]],
+                                 labels: list[int],
+                                 feature_name: str
+        ) -> tuple[dict[str, list[int |float]], list[int]]:
         # Get the list of values for the given feature
         feature_values = features[feature_name]
 
