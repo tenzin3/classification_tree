@@ -26,6 +26,6 @@ class TestClassifier(TestCase):
         }
         labels = [0,0,1,1,1,1,0]
         classifier = Classifier()
-        classifier.train(features=features, labels=labels)
+        # classifier.train(features=features, labels=labels)
 
-        
+

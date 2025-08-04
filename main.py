@@ -122,6 +122,54 @@ class Classifier:
             root_node.right = self._walk(root_node, sliced_features, sorted_labels[thres_idx:])
             return root_node
         
+        # Other than Initial Walk
+        max = 0
+        next_node = None
+        for feat, vals in features.items():
+            # Same feature cant be used for consecutive adjacent nodes
+            if feat == node.feature:
+                continue
+
+            sorted_vals, sorted_labs = self._sort_feature_values(vals, labels)
+
+            feat_max = 0
+            length = len(sorted_vals)
+            for i in range(length):
+                # Left 0 and Right 1
+                pred = [0] * (i-0) + [1] * (length - i) 
+                acc = self.calculate_accuracy(pred, sorted_labs)
+                if acc > feat_max:
+                    feat_max = acc
+                    next_node = Node(
+                        feature=feat, threshold=sorted_vals[i], label=0
+                    )
+                    
+                # Left 1 and Right 0
+                pred = [1] * (i-0) + [0] * (length - i)
+                acc = self.calculate_accuracy(pred, sorted_labs)
+                if acc > feat_max:
+                    feat_max = acc
+                    next_node = Node(
+                        feature=feat, threshold=sorted_vals[i], label=1
+                    )
+            
+            # If a particular feature can do greater than accuracy threshold
+            if feat_max > max and feat_max > self.accuracy_threshold:
+                max = feat_max
+
+        if next_node == None:
+            return None
+        
+        sorted_features, sorted_labels = self._sort_features_and_label(features, labels, next_node.feature)
+
+        thres_idx = self.get_threshold_index(sorted_features[next_node.feature], next_node.threshold)
+        # left side
+        sliced_features = {key: value[:thres_idx] for key, value in features.items()}
+        next_node.left = self._walk(next_node, sliced_features, sorted_labels[:thres_idx])
+        # right side
+        sliced_features = {key: value[thres_idx:] for key, value in features.items()}
+        next_node.right = self._walk(next_node, sliced_features, sorted_labels[thres_idx:])
+        return next_node
             
     def train(self, features: dict[str, list[int | float]], labels: list[int]):
         self._validate_training_data(features, labels)
