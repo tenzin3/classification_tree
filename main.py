@@ -1,5 +1,7 @@
 from typing import Optional
 
+feats_dtype = dict[str, list[int | float]]
+
 class Node:
     def __init__(self, feature:str, threshold: int | float, label: int):
         self.feature = feature
@@ -35,7 +37,7 @@ class Classifier:
             if val >= threshold:
                 return idx
  
-    def _validate_training_data(self, features: dict[str, list[int | float]], labels: list[int]):
+    def _validate_training_data(self, features: feats_dtype, labels: list[int]):
         labels_len = len(labels)
 
         for feat, vals in features.items():
@@ -54,10 +56,10 @@ class Classifier:
         return sorted_feat, sorted_labels
 
     def _sort_features_and_labels(self,
-                                 feats: dict[str, list[int | float]],
+                                 feats: feats_dtype,
                                  labels: list[int],
                                  feat_name: str
-        ) -> tuple[dict[str, list[int |float]], list[int]]:
+        ):
         # Get the list of values for the given feature
         feat_vals = feats[feat_name]
 
@@ -76,7 +78,7 @@ class Classifier:
         return sorted_feats, sorted_labels
 
 
-    def _walk(self, node: Node, features: dict[str, list[int | float]], labels: list[int]):
+    def _walk(self, node: Node, features: feats_dtype, labels: list[int]):
         # first walk
         if node == None:
             max = 0
@@ -171,7 +173,7 @@ class Classifier:
             next_node.right = self._walk(next_node, sliced_features, sorted_labels[thres_idx:])
         return next_node
             
-    def train(self, features: dict[str, list[int | float]], labels: list[int]):
+    def train(self, features: feats_dtype, labels: list[int]):
         self._validate_training_data(features, labels)
 
         root_node = None
