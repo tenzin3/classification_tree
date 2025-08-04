@@ -116,11 +116,11 @@ class Classifier:
 
             idx = self.get_threshold_index(sorted_feats[root_node.feature], root_node.threshold)
             # left side
-            sliced_feats = {key: value[:idx] for key, value in feats.items()}
-            root_node.left = self._walk(root_node, sliced_feats, sorted_labels[:idx])
+            left_feats = {key: value[:idx] for key, value in feats.items()}
+            root_node.left = self._walk(root_node, left_feats, sorted_labels[:idx])
             # right side
-            sliced_feats = {key: value[idx:] for key, value in feats.items()}
-            root_node.right = self._walk(root_node, sliced_feats, sorted_labels[idx:])
+            right_feats = {key: value[idx:] for key, value in feats.items()}
+            root_node.right = self._walk(root_node, right_feats, sorted_labels[idx:])
             return root_node
         
         # Other than Initial Walk
