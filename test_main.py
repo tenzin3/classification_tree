@@ -20,6 +20,12 @@ class TestClassifier(TestCase):
         assert classifier.root_node.right == None
 
     def test_two_feature(self):
-        pass 
+        features = {
+            "petal_length": [0.2, 0.3, 0.7, 0.8, 0.15, 0.25, 0.9],
+            "petal_width": [0.9, 0.8, 0.7, 0.8, 0.4, 0.35, 0.2]
+        }
+        label = [0,0,1,1,1,1,0]
+        Classifier = Classifier()
+        Classifier.train(features=features, label=label)
 
         
