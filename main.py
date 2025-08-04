@@ -167,12 +167,12 @@ class Classifier:
         idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
         # left side
         if idx !=0: 
-            sliced_feats = {key: value[:idx] for key, value in feats.items()}
-            next_node.left = self._walk(next_node, sliced_feats, sorted_labels[:idx])
+            left_feats = {key: value[:idx] for key, value in feats.items()}
+            next_node.left = self._walk(next_node, left_feats, sorted_labels[:idx])
         # right side
         if idx != length - 1:
-            sliced_feats = {key: value[idx:] for key, value in feats.items()}
-            next_node.right = self._walk(next_node, sliced_feats, sorted_labels[idx:])
+            right_feats = {key: value[idx:] for key, value in feats.items()}
+            next_node.right = self._walk(next_node, right_feats, sorted_labels[idx:])
         return next_node
             
     def train(self, feats: feats_dtype, labels: list[int]):
