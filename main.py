@@ -79,6 +79,8 @@ class Classifier:
                 
                 if feat_max > max:
                     max = feat_max
+
+            self.root_node = root_node
             
     def train(self, features: dict[str, list[int | float]], label: list[int]):
         self._validate_training_data(features, label)
