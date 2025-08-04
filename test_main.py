@@ -29,3 +29,5 @@ class TestClassifier(TestCase):
     #     classifier.train(features=features, labels=labels)
 
     #     pass 
+
+TestClassifier().test_one_feature()

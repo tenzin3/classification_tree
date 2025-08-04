@@ -73,6 +73,33 @@ class Classifier:
 
         return sorted_feats, sorted_labels
 
+    def _walk_feat(self, feat: list[int], labels: list[int], feat_name:str):
+        sorted_feat, sorted_labs = self._sort_feature_and_labels(feat, labels)
+
+        feat_max = 0
+        feat_len = len(sorted_feat)
+
+        node = None
+        for i in range(feat_len):
+            # Left 0 and Right 1
+            pred = [0] * (i-0) + [1] * (feat_len - i) 
+            acc = self.calculate_accuracy(pred, sorted_labs)
+            if acc > feat_max:
+                feat_max = acc
+                node = Node(
+                    feature=feat_name, threshold=sorted_feat[i], label=0
+                )
+                
+            # Left 1 and Right 0
+            pred = [1] * (i-0) + [0] * (feat_len - i)
+            acc = self.calculate_accuracy(pred, sorted_labs)
+            if acc > feat_max:
+                feat_max = acc
+                node = Node(
+                    feature=feat_name, threshold=sorted_feat[i], label=1
+                )
+        return feat_max, node
+
 
     def _walk(self, node: Node, features: feats_dtype, labels: list[int]):
         # first walk
@@ -80,31 +107,10 @@ class Classifier:
             max = 0
             root_node = None
             for feat, vals in features.items():
-                sorted_vals, sorted_labs = self._sort_feature_and_labels(vals, labels)
-
-                feat_max = 0
-                length = len(sorted_vals)
-                for i in range(length):
-                    # Left 0 and Right 1
-                    pred = [0] * (i-0) + [1] * (length - i) 
-                    acc = self.calculate_accuracy(pred, sorted_labs)
-                    if acc > feat_max:
-                        feat_max = acc
-                        root_node = Node(
-                            feature=feat, threshold=sorted_vals[i], label=0
-                        )
-                        
-                    # Left 1 and Right 0
-                    pred = [1] * (i-0) + [0] * (length - i)
-                    acc = self.calculate_accuracy(pred, sorted_labs)
-                    if acc > feat_max:
-                        feat_max = acc
-                        root_node = Node(
-                            feature=feat, threshold=sorted_vals[i], label=1
-                        )
-                
+                feat_max, node = self._walk_feat(vals, labels, feat)
                 if feat_max > max:
                     max = feat_max
+                    root_node = node
 
             sorted_features, sorted_labels = self._sort_features_and_labels(features, labels, root_node.feature)
 
