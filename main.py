@@ -28,8 +28,8 @@ class Classifier:
         
         return correct / len(prediction)
  
-
-    def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
+    @staticmethod
+    def _validate_training_data(features: dict[str, list[int | float]], label: list[int]):
         label_count = len(label)
 
         for feat, vals in features.items():
