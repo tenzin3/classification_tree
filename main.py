@@ -31,17 +31,20 @@ class Classifier:
         return correct / len(prediction)
     
     @staticmethod
-    def get_threshold_index(arr: list[int | float], threshold: int | float) -> int:
-        for idx, val in enumerate(arr):
+    def get_threshold_index(sorted_arr: list[int | float], threshold: int | float) -> int:
+        """
+        Return index in which sorted array value is greater or equal to threshold.
+        """
+        for idx, val in enumerate(sorted_arr):
             if val >= threshold:
                 return idx
  
     def _validate_training_data(self, features: dict[str, list[int | float]], labels: list[int]):
-        label_count = len(labels)
+        labels_len = len(labels)
 
         for feat, vals in features.items():
-            val_count = len(vals)
-            if val_count != label_count:
+            vals_len = len(vals)
+            if vals_len != labels_len:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
     def _sort_feature_values(self, feature_vals: list[int | float], labels: list[int]):
