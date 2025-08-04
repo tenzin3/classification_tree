@@ -1,3 +1,13 @@
+from typing import Optional
+
+class Node:
+    def __init__(self, feature:str, value: int | float):
+        self.feature = feature
+        self.value = value
+        
+        self.left: Optional[Node] = None # less than
+        self.right: Optional[Node] = None # greater and equal
+
 class Classifier:
     def __init__(self):
         self.accuracy_threshold = 0.6
@@ -7,7 +17,6 @@ class Classifier:
         pass 
 
     def _validate_training_data(self, feature: dict[str, list[int | float]], label: list[int]):
-        # data validation
         label_count = len(label)
 
         for feat, vals in feature.items():
@@ -29,7 +38,6 @@ class Classifier:
 
     def train(self, feature: dict[str, list[int | float]], label: list[int]):
         self._validate_training_data(feature, label)
-        pass 
 
     def predict(self, feature: list[float]):
         pass 
