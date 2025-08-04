@@ -19,16 +19,16 @@ class Classifier:
         pass
 
     @staticmethod
-    def calculate_accuracy(prediction: list[int], labels: list[int]):
-        if len(prediction) != len(labels):
+    def calculate_accuracy(predictions: list[int], labels: list[int]):
+        if len(predictions) != len(labels):
             raise ValueError("Number of prediction values is not equal to Labels.")
         
         correct = 0
-        for pred, lab in zip(prediction, labels):
+        for pred, lab in zip(predictions, labels):
             if pred == lab:
                 correct += 1
-        
-        return correct / len(prediction)
+
+        return correct / len(predictions)
     
     @staticmethod
     def get_threshold_index(sorted_arr: list[int | float], threshold: int | float) -> int:
@@ -47,7 +47,7 @@ class Classifier:
             if vals_len != labels_len:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
-    def _sort_feature_values(self, feature_vals: list[int | float], labels: list[int]):
+    def _sort_feature_and_labels(self, feature_vals: list[int | float], labels: list[int]):
         # Get the sorted indices based on vals
         sorted_indices = sorted(range(len(feature_vals)), key=lambda i: feature_vals[i])
 
@@ -57,7 +57,7 @@ class Classifier:
 
         return sorted_vals, sorted_labels
 
-    def _sort_features_and_label(self,
+    def _sort_features_and_labels(self,
                                  features: dict[str, list[int | float]],
                                  labels: list[int],
                                  feature_name: str
@@ -86,7 +86,7 @@ class Classifier:
             max = 0
             root_node = None
             for feat, vals in features.items():
-                sorted_vals, sorted_labs = self._sort_feature_values(vals, labels)
+                sorted_vals, sorted_labs = self._sort_feature_and_labels(vals, labels)
 
                 feat_max = 0
                 length = len(sorted_vals)
@@ -112,7 +112,7 @@ class Classifier:
                 if feat_max > max:
                     max = feat_max
 
-            sorted_features, sorted_labels = self._sort_features_and_label(features, labels, root_node.feature)
+            sorted_features, sorted_labels = self._sort_features_and_labels(features, labels, root_node.feature)
 
             thres_idx = self.get_threshold_index(sorted_features[root_node.feature], root_node.threshold)
             # left side
@@ -132,7 +132,7 @@ class Classifier:
             if feat == node.feature:
                 continue
 
-            sorted_vals, sorted_labs = self._sort_feature_values(vals, labels)
+            sorted_vals, sorted_labs = self._sort_feature_and_labels(vals, labels)
 
             feat_max = 0
             
@@ -162,7 +162,7 @@ class Classifier:
         if next_node == None:
             return None
         
-        sorted_features, sorted_labels = self._sort_features_and_label(features, labels, next_node.feature)
+        sorted_features, sorted_labels = self._sort_features_and_labels(features, labels, next_node.feature)
 
         thres_idx = self.get_threshold_index(sorted_features[next_node.feature], next_node.threshold)
         # left side
