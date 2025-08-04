@@ -127,12 +127,12 @@ class Classifier:
         max = 0
         next_node = None
         length = len(labels)
-        for feat, vals in feats.items():
+        for feat_name, feat in feats.items():
             # Same feature cant be used for consecutive adjacent nodes
-            if feat == node.feature:
+            if feat_name == node.feature:
                 continue
 
-            sorted_vals, sorted_labs = self._sort_feat_and_labels(vals, labels)
+            sorted_feat, sorted_labs = self._sort_feat_and_labels(feat, labels)
 
             feat_max = 0
             
@@ -143,7 +143,7 @@ class Classifier:
                 if acc > feat_max:
                     feat_max = acc
                     next_node = Node(
-                        feature=feat, threshold=sorted_vals[i], label=0
+                        feature=feat, threshold=sorted_feat[i], label=0
                     )
                     
                 # Left 1 and Right 0
@@ -152,7 +152,7 @@ class Classifier:
                 if acc > feat_max:
                     feat_max = acc
                     next_node = Node(
-                        feature=feat, threshold=sorted_vals[i], label=1
+                        feature=feat, threshold=sorted_feat[i], label=1
                     )
             
             # If a particular feature can do greater than accuracy threshold
