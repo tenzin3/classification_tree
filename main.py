@@ -1,8 +1,8 @@
 from typing import Optional
 
 class Node:
-    def __init__(self, feature:str, value: int | float):
-        self.feature = feature
+    def __init__(self, features:str, value: int | float):
+        self.features = features
         self.value = value
         
         self.left: Optional[Node] = None # less than
@@ -16,10 +16,10 @@ class Classifier:
     def training_res(self):
         pass 
 
-    def _validate_training_data(self, feature: dict[str, list[int | float]], label: list[int]):
+    def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
         label_count = len(label)
 
-        for feat, vals in feature.items():
+        for feat, vals in features.items():
             val_count = len(vals)
             if val_count != label_count:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
@@ -36,10 +36,10 @@ class Classifier:
         
         return correct / len(prediction)
 
-    def train(self, feature: dict[str, list[int | float]], label: list[int]):
-        self._validate_training_data(feature, label)
+    def train(self, features: dict[str, list[int | float]], label: list[int]):
+        self._validate_training_data(features, label)
 
-    def predict(self, feature: list[float]):
+    def predict(self, features: list[float]):
         pass 
 
 
