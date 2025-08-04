@@ -14,18 +14,10 @@ class Classifier:
 
     @property
     def training_res(self):
-        pass 
+        pass
 
-    def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
-        label_count = len(label)
-
-        for feat, vals in features.items():
-            val_count = len(vals)
-            if val_count != label_count:
-                raise ValueError(f"Feature {feat} values count is not equal to label count.")
-            
-        
-    def calculate_accuracy(self, prediction: list[int], label: list[int]):
+    @staticmethod
+    def calculate_accuracy(prediction: list[int], label: list[int]):
         if len(prediction) != len(label):
             raise ValueError("Number of prediction values is not equal to Labels.")
         
@@ -35,7 +27,16 @@ class Classifier:
                 correct += 1
         
         return correct / len(prediction)
+ 
 
+    def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
+        label_count = len(label)
+
+        for feat, vals in features.items():
+            val_count = len(vals)
+            if val_count != label_count:
+                raise ValueError(f"Feature {feat} values count is not equal to label count.")
+            
     def train(self, features: dict[str, list[int | float]], label: list[int]):
         self._validate_training_data(features, label)
 
