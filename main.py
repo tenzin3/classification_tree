@@ -19,12 +19,12 @@ class Classifier:
         pass
 
     @staticmethod
-    def calculate_accuracy(prediction: list[int], label: list[int]):
-        if len(prediction) != len(label):
+    def calculate_accuracy(prediction: list[int], labels: list[int]):
+        if len(prediction) != len(labels):
             raise ValueError("Number of prediction values is not equal to Labels.")
         
         correct = 0
-        for pred, lab in zip(prediction, label):
+        for pred, lab in zip(prediction, labels):
             if pred == lab:
                 correct += 1
         
@@ -36,29 +36,29 @@ class Classifier:
             if val >= threshold:
                 return idx
  
-    def _validate_training_data(self, features: dict[str, list[int | float]], label: list[int]):
-        label_count = len(label)
+    def _validate_training_data(self, features: dict[str, list[int | float]], labels: list[int]):
+        label_count = len(labels)
 
         for feat, vals in features.items():
             val_count = len(vals)
             if val_count != label_count:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
-    def _sort_feature_values(self, feature_vals: list[int | float], label: list[int]):
+    def _sort_feature_values(self, feature_vals: list[int | float], labels: list[int]):
         # Get the sorted indices based on vals
         sorted_indices = sorted(range(len(feature_vals)), key=lambda i: feature_vals[i])
 
         # Sort both lists using the indices
         sorted_vals = [feature_vals[i] for i in sorted_indices]
-        sorted_label = [label[i] for i in sorted_indices]
+        sorted_labels = [labels[i] for i in sorted_indices]
 
-        return sorted_vals, sorted_label
+        return sorted_vals, sorted_labels
     
     from typing import Union
 
     def _sort_features_and_label(self,
                                 features: dict[str, list[Union[int, float]]],
-                                label: list[int],
+                                labels: list[int],
                                 feature_name: str
         ) -> tuple[dict[str, list[Union[int, float]]], list[int]]:
         # Get the list of values for the given feature
@@ -74,25 +74,25 @@ class Classifier:
         }
 
         # Reorder the label list using sorted indices
-        sorted_label = [label[i] for i in sorted_indices]
+        sorted_labels = [labels[i] for i in sorted_indices]
 
-        return sorted_features, sorted_label
+        return sorted_features, sorted_labels
 
 
-    def _walk(self, node: Node, features: dict[str, list[int | float]], label: list[int]):
+    def _walk(self, node: Node, features: dict[str, list[int | float]], labels: list[int]):
         # first walk
         if node == None:
             max = 0
             root_node = None
             for feat, vals in features.items():
-                sorted_vals, sorted_lab = self._sort_feature_values(vals, label)
+                sorted_vals, sorted_labs = self._sort_feature_values(vals, labels)
 
                 feat_max = 0
                 length = len(sorted_vals)
                 for i in range(length):
                     # Left 0 and Right 1
                     pred = [0] * (i-0) + [1] * (length - i) 
-                    acc = self.calculate_accuracy(pred, sorted_lab)
+                    acc = self.calculate_accuracy(pred, sorted_labs)
                     if acc > feat_max:
                         feat_max = acc
                         root_node = Node(
@@ -101,7 +101,7 @@ class Classifier:
                         
                     # Left 1 and Right 0
                     pred = [1] * (i-0) + [0] * (length - i)
-                    acc = self.calculate_accuracy(pred, sorted_lab)
+                    acc = self.calculate_accuracy(pred, sorted_labs)
                     if acc > feat_max:
                         feat_max = acc
                         root_node = Node(
@@ -112,21 +112,21 @@ class Classifier:
                     max = feat_max
 
             self.root_node = root_node
-            sorted_features, sorted_label = self._sort_features_and_label(features, label, self.root_node.feature)
+            sorted_features, sorted_labels = self._sort_features_and_label(features, labels, self.root_node.feature)
 
-            threshold_index = self.get_threshold_index(sorted_features[self.root_node.feature], self.root_node.threshold)
+            thres_idx = self.get_threshold_index(sorted_features[self.root_node.feature], self.root_node.threshold)
             # left side
-            sliced_features = {key: value[:k] for key, value in features.items()}
-            self._walk(self.root_node, sliced_features, sorted_label[:threshold_index])
+            sliced_features = {key: value[:thres_idx] for key, value in features.items()}
+            self._walk(self.root_node, sliced_features, sorted_labels[:thres_idx])
             # right side
-            sliced_features = {key: value[k:] for key, value in features.items()}
-            self._walk(self.root_node, sliced_features, sorted_label[k:])
+            sliced_features = {key: value[thres_idx:] for key, value in features.items()}
+            self._walk(self.root_node, sliced_features, sorted_labels[thres_idx:])
             
-    def train(self, features: dict[str, list[int | float]], label: list[int]):
-        self._validate_training_data(features, label)
+    def train(self, features: dict[str, list[int | float]], labels: list[int]):
+        self._validate_training_data(features, labels)
 
         root_node = None
-        self._walk(root_node, features, label)
+        self._walk(root_node, features, labels)
 
     def predict(self, features: list[float]):
         pass 
