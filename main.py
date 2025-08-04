@@ -11,6 +11,22 @@ class Node:
         self.left: Optional[Node] = None # less than
         self.right: Optional[Node] = None # greater and equal
 
+def collect_nodes(node, nodes=None):
+    if nodes is None:
+        nodes = []
+    if node is None:
+        return nodes
+    nodes.append({
+        "feature": node.feature,
+        "threshold": node.threshold,
+        "left_label": node.left_label,
+        "left": node.left is not None,
+        "right": node.right is not None
+    })
+    collect_nodes(node.left, nodes)
+    collect_nodes(node.right, nodes)
+    return nodes
+
 class Classifier:
     def __init__(self):
         self.accuracy_threshold = 0.6

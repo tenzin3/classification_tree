@@ -1,5 +1,5 @@
 from unittest import TestCase
-from main import Classifier
+from main import Classifier, collect_nodes
 
 class TestClassifier(TestCase):
     def setUp(self):
@@ -28,7 +28,13 @@ class TestClassifier(TestCase):
         classifier = Classifier()
         classifier.train(feats=features, labels=labels)
 
-        pass 
-
-
-TestClassifier().test_two_feature()
+        nodes = collect_nodes(classifier.root_node)
+        expected_nodes = [
+            {'feature': 'petal_length', 'threshold': 0.9, 'left_label': 1, 'left': True, 'right': True}, 
+            {'feature': 'petal_width', 'threshold': 0.8, 'left_label': 1, 'left': True, 'right': True}, 
+            {'feature': 'petal_length', 'threshold': 0.2, 'left_label': 0, 'left': False, 'right': False}, 
+            {'feature': 'petal_width', 'threshold': 0.4, 'left_label': 1, 'left': True, 'right': False}, 
+            {'feature': 'petal_length', 'threshold': 0.8, 'left_label': 0, 'left': False, 'right': False}, 
+            {'feature': 'petal_width', 'threshold': 0.2, 'left_label': 1, 'left': False, 'right': False}
+        ]
+        assert nodes == expected_nodes
