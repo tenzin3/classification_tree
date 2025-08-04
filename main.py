@@ -111,22 +111,23 @@ class Classifier:
                 if feat_max > max:
                     max = feat_max
 
-            self.root_node = root_node
-            sorted_features, sorted_labels = self._sort_features_and_label(features, labels, self.root_node.feature)
+            sorted_features, sorted_labels = self._sort_features_and_label(features, labels, root_node.feature)
 
-            thres_idx = self.get_threshold_index(sorted_features[self.root_node.feature], self.root_node.threshold)
+            thres_idx = self.get_threshold_index(sorted_features[root_node.feature], root_node.threshold)
             # left side
             sliced_features = {key: value[:thres_idx] for key, value in features.items()}
-            self._walk(self.root_node, sliced_features, sorted_labels[:thres_idx])
+            root_node.left = self._walk(root_node, sliced_features, sorted_labels[:thres_idx])
             # right side
             sliced_features = {key: value[thres_idx:] for key, value in features.items()}
-            self._walk(self.root_node, sliced_features, sorted_labels[thres_idx:])
+            root_node.right = self._walk(root_node, sliced_features, sorted_labels[thres_idx:])
+            return root_node
+        
             
     def train(self, features: dict[str, list[int | float]], labels: list[int]):
         self._validate_training_data(features, labels)
 
         root_node = None
-        self._walk(root_node, features, labels)
+        self.root_node = self._walk(root_node, features, labels)
 
     def predict(self, features: list[float]):
         pass 
