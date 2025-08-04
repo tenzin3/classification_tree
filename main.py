@@ -45,7 +45,7 @@ class Classifier:
             if vals_len != labels_len:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
-    def _sort_feature_and_labels(self, feat: list[int | float], labels: list[int]):
+    def _sort_feat_and_labels(self, feat: list[int | float], labels: list[int]):
         # Get the sorted indices based on feature values
         sorted_indices = sorted(range(len(feat)), key=lambda i: feat[i])
 
@@ -55,7 +55,7 @@ class Classifier:
 
         return sorted_feat, sorted_labels
 
-    def _sort_features_and_labels(self, feats: feats_dtype, labels: list[int], feat_name: str):
+    def _sort_feats_and_labels(self, feats: feats_dtype, labels: list[int], feat_name: str):
         # Get the list of values for the given feature
         feat_vals = feats[feat_name]
 
@@ -74,7 +74,7 @@ class Classifier:
         return sorted_feats, sorted_labels
 
     def _walk_feat(self, feat: list[int], labels: list[int], feat_name:str):
-        sorted_feat, sorted_labs = self._sort_feature_and_labels(feat, labels)
+        sorted_feat, sorted_labs = self._sort_feat_and_labels(feat, labels)
 
         feat_max = 0
         feat_len = len(sorted_feat)
@@ -112,7 +112,7 @@ class Classifier:
                     max = feat_max
                     root_node = node
 
-            sorted_feats, sorted_labels = self._sort_features_and_labels(feats, labels, root_node.feature)
+            sorted_feats, sorted_labels = self._sort_feats_and_labels(feats, labels, root_node.feature)
 
             thres_idx = self.get_threshold_index(sorted_feats[root_node.feature], root_node.threshold)
             # left side
@@ -132,7 +132,7 @@ class Classifier:
             if feat == node.feature:
                 continue
 
-            sorted_vals, sorted_labs = self._sort_feature_and_labels(vals, labels)
+            sorted_vals, sorted_labs = self._sort_feat_and_labels(vals, labels)
 
             feat_max = 0
             
@@ -162,7 +162,7 @@ class Classifier:
         if next_node == None:
             return None
         
-        sorted_feats, sorted_labels = self._sort_features_and_labels(feats, labels, next_node.feature)
+        sorted_feats, sorted_labels = self._sort_feats_and_labels(feats, labels, next_node.feature)
 
         thres_idx = self.get_threshold_index(sorted_feats[next_node.feature], next_node.threshold)
         # left side
