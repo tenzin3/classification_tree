@@ -125,6 +125,7 @@ class Classifier:
         # Other than Initial Walk
         max = 0
         next_node = None
+        length = len(labels)
         for feat, vals in features.items():
             # Same feature cant be used for consecutive adjacent nodes
             if feat == node.feature:
@@ -133,7 +134,7 @@ class Classifier:
             sorted_vals, sorted_labs = self._sort_feature_values(vals, labels)
 
             feat_max = 0
-            length = len(sorted_vals)
+            
             for i in range(length):
                 # Left 0 and Right 1
                 pred = [0] * (i-0) + [1] * (length - i) 
@@ -164,11 +165,13 @@ class Classifier:
 
         thres_idx = self.get_threshold_index(sorted_features[next_node.feature], next_node.threshold)
         # left side
-        sliced_features = {key: value[:thres_idx] for key, value in features.items()}
-        next_node.left = self._walk(next_node, sliced_features, sorted_labels[:thres_idx])
+        if thres_idx !=0: 
+            sliced_features = {key: value[:thres_idx] for key, value in features.items()}
+            next_node.left = self._walk(next_node, sliced_features, sorted_labels[:thres_idx])
         # right side
-        sliced_features = {key: value[thres_idx:] for key, value in features.items()}
-        next_node.right = self._walk(next_node, sliced_features, sorted_labels[thres_idx:])
+        if thres_idx != length - 1:
+            sliced_features = {key: value[thres_idx:] for key, value in features.items()}
+            next_node.right = self._walk(next_node, sliced_features, sorted_labels[thres_idx:])
         return next_node
             
     def train(self, features: dict[str, list[int | float]], labels: list[int]):
