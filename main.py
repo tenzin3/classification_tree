@@ -14,10 +14,6 @@ class Classifier:
         self.accuracy_threshold = 0.6
         self.root_node: Optional[Node] = None
 
-    @property
-    def training_res(self):
-        pass
-
     @staticmethod
     def calculate_accuracy(predictions: list[int], labels: list[int]):
         if len(predictions) != len(labels):
@@ -47,37 +43,37 @@ class Classifier:
             if vals_len != labels_len:
                 raise ValueError(f"Feature {feat} values count is not equal to label count.")
             
-    def _sort_feature_and_labels(self, feature_vals: list[int | float], labels: list[int]):
-        # Get the sorted indices based on vals
-        sorted_indices = sorted(range(len(feature_vals)), key=lambda i: feature_vals[i])
+    def _sort_feature_and_labels(self, feat: list[int | float], labels: list[int]):
+        # Get the sorted indices based on feature values
+        sorted_indices = sorted(range(len(feat)), key=lambda i: feat[i])
 
         # Sort both lists using the indices
-        sorted_vals = [feature_vals[i] for i in sorted_indices]
+        sorted_feat = [feat[i] for i in sorted_indices]
         sorted_labels = [labels[i] for i in sorted_indices]
 
-        return sorted_vals, sorted_labels
+        return sorted_feat, sorted_labels
 
     def _sort_features_and_labels(self,
-                                 features: dict[str, list[int | float]],
+                                 feats: dict[str, list[int | float]],
                                  labels: list[int],
-                                 feature_name: str
+                                 feat_name: str
         ) -> tuple[dict[str, list[int |float]], list[int]]:
         # Get the list of values for the given feature
-        feature_values = features[feature_name]
+        feat_vals = feats[feat_name]
 
         # Obtain indices that would sort the feature_values
-        sorted_indices = sorted(range(len(feature_values)), key=lambda i: feature_values[i])
+        sorted_indices = sorted(range(len(feat_vals)), key=lambda i: feat_vals[i])
 
         # Reorder each feature list using sorted indices
-        sorted_features = {
-            fname: [features[fname][i] for i in sorted_indices]
-            for fname in features
+        sorted_feats = {
+            fname: [feats[fname][i] for i in sorted_indices]
+            for fname in feats
         }
 
         # Reorder the label list using sorted indices
         sorted_labels = [labels[i] for i in sorted_indices]
 
-        return sorted_features, sorted_labels
+        return sorted_feats, sorted_labels
 
 
     def _walk(self, node: Node, features: dict[str, list[int | float]], labels: list[int]):
