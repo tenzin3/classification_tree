@@ -132,32 +132,10 @@ class Classifier:
             if feat_name == node.feature:
                 continue
 
-            sorted_feat, sorted_labs = self._sort_feat_and_labels(feat, labels)
-
-            feat_max = 0
-            
-            for i in range(length):
-                # Left 0 and Right 1
-                pred = [0] * (i-0) + [1] * (length - i) 
-                acc = self.calculate_accuracy(pred, sorted_labs)
-                if acc > feat_max:
-                    feat_max = acc
-                    next_node = Node(
-                        feature=feat, threshold=sorted_feat[i], label=0
-                    )
-                    
-                # Left 1 and Right 0
-                pred = [1] * (i-0) + [0] * (length - i)
-                acc = self.calculate_accuracy(pred, sorted_labs)
-                if acc > feat_max:
-                    feat_max = acc
-                    next_node = Node(
-                        feature=feat, threshold=sorted_feat[i], label=1
-                    )
-            
-            # If a particular feature can do greater than accuracy threshold
+            feat_max, node = self._walk_feat(feat, labels, feat_name)
             if feat_max > max and feat_max > self.accuracy_threshold:
                 max = feat_max
+                next_node = node
 
         if next_node == None:
             return None
