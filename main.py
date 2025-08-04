@@ -55,11 +55,7 @@ class Classifier:
 
         return sorted_feat, sorted_labels
 
-    def _sort_features_and_labels(self,
-                                 feats: feats_dtype,
-                                 labels: list[int],
-                                 feat_name: str
-        ):
+    def _sort_features_and_labels(self, feats: feats_dtype, labels: list[int], feat_name: str):
         # Get the list of values for the given feature
         feat_vals = feats[feat_name]
 
